@@ -1,23 +1,562 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My Website</title>
-  <style>
-    body { font-family: Arial; text-align: center; margin-top: 50px; }
-    input, textarea { display: block; margin: 10px auto; width: 250px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Louise Fouqueau — Population Genetics</title>
+<meta name="description" content="Louise Fouqueau, postdoc in population genetics at ISTA. Adaptation in structured populations, clonality, genetic architecture.">
+<style>
+  :root{
+    --ink:#1c2b27;
+    --paper:#eeece2;
+    --moss:#3f6357;
+    --moss-dark:#2c4841;
+    --ochre:#b9852f;
+    --stone:#8c9890;
+    --line:#c9c6b8;
+    --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --font-body: 'Source Sans 3', 'Segoe UI', Arial, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  }
+
+  @font-face{
+    font-family:'Fraunces';
+    src: local('Fraunces');
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  a{color:inherit;}
+  img{max-width:100%;}
+
+  .wrap{max-width:1040px; margin:0 auto; padding:0 28px;}
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(238,236,226,0.86);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  header.nav .wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-top:16px; padding-bottom:16px;
+  }
+  .brand{
+    font-family:var(--font-mono);
+    font-size:0.85rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    text-decoration:none;
+    color:var(--moss-dark);
+  }
+  nav.links{display:flex; gap:26px;}
+  nav.links a{
+    font-family:var(--font-mono);
+    font-size:0.8rem;
+    text-decoration:none;
+    color:var(--ink);
+    letter-spacing:0.02em;
+    position:relative;
+    padding-bottom:3px;
+  }
+  nav.links a::after{
+    content:"";
+    position:absolute; left:0; bottom:0;
+    width:0; height:1px; background:var(--ochre);
+    transition:width 0.25s ease;
+  }
+  nav.links a:hover::after{width:100%;}
+  @media (max-width:640px){
+    nav.links{gap:14px;}
+    nav.links a{font-size:0.7rem;}
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    padding:86px 0 70px;
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+  }
+  .hero .wrap{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:40px;
+    align-items:center;
+    position:relative;
+    z-index:2;
+  }
+  @media (max-width:820px){
+    .hero .wrap{grid-template-columns:1fr;}
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    color:var(--moss);
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    margin:0 0 14px;
+  }
+  h1.title{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:clamp(2.4rem, 5vw, 3.4rem);
+    line-height:1.05;
+    margin:0 0 18px;
+    color:var(--moss-dark);
+  }
+  .tagline{
+    font-size:1.08rem;
+    color:#3a4741;
+    max-width:46ch;
+    margin:0 0 26px;
+  }
+  .position{
+    font-family:var(--font-mono);
+    font-size:0.85rem;
+    color:var(--ink);
+    background:#e2ded0;
+    border:1px solid var(--line);
+    display:inline-block;
+    padding:8px 12px;
+    border-radius:3px;
+    margin-bottom:28px;
+  }
+  .position strong{color:var(--moss-dark);}
+
+  .social-row{display:flex; gap:14px; align-items:center;}
+  .social-row a{
+    width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line);
+    border-radius:50%;
+    background:#e6e3d6;
+    transition:background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  }
+  .social-row a svg{width:17px; height:17px; fill:var(--moss-dark);}
+  .social-row a:hover{background:var(--moss-dark); transform:translateY(-2px); border-color:var(--moss-dark);}
+  .social-row a:hover svg{fill:var(--paper);}
+
+  /* lattice signature graphic */
+  .lattice-holder{position:relative; width:100%; aspect-ratio:1/1; max-width:380px; justify-self:center;}
+  #lattice{width:100%; height:100%; display:block;}
+  .lattice-caption{
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    color:var(--stone);
+    text-align:center;
+    margin-top:10px;
+    letter-spacing:0.03em;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:64px 0;}
+  section.alt{background:#e6e3d6; border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  h2.h2{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.9rem;
+    color:var(--moss-dark);
+    margin:0 0 30px;
+  }
+  .section-num{
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    color:var(--ochre);
+    letter-spacing:0.08em;
+    display:block;
+    margin-bottom:6px;
+  }
+
+  .bio p{max-width:70ch; font-size:1.02rem;}
+  .tags{display:flex; flex-wrap:wrap; gap:10px; margin-top:26px;}
+  .tag{
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    padding:7px 13px;
+    border:1px solid var(--moss);
+    color:var(--moss-dark);
+    border-radius:20px;
+    background:transparent;
+  }
+
+  /* Projects */
+  .cards{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:22px; margin-top:8px;}
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:24px;
+    border-radius:4px;
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(28,43,39,0.08);}
+  .card h3{
+    font-family:var(--font-display);
+    font-size:1.15rem;
+    margin:0 0 10px;
+    color:var(--moss-dark);
+  }
+  .card p{margin:0 0 14px; font-size:0.94rem; color:#414f49;}
+  .card a.card-link{
+    font-family:var(--font-mono);
+    font-size:0.76rem;
+    text-decoration:none;
+    color:var(--ochre);
+    border-bottom:1px solid var(--ochre);
+    padding-bottom:1px;
+  }
+  .placeholder-note{
+    display:inline-block;
+    margin-top:12px;
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    color:#a35a3a;
+    background:#f3e3d8;
+    padding:3px 8px;
+    border-radius:3px;
+  }
+
+  /* CV timeline */
+  .timeline{position:relative; margin-top:10px; padding-left:26px;}
+  .timeline::before{
+    content:"";
+    position:absolute; left:5px; top:6px; bottom:6px;
+    width:1px; background:var(--line);
+  }
+  .t-item{position:relative; margin-bottom:34px;}
+  .t-item::before{
+    content:"";
+    position:absolute; left:-26px; top:4px;
+    width:11px; height:11px; border-radius:50%;
+    background:var(--paper); border:2px solid var(--moss);
+  }
+  .t-item.current::before{background:var(--ochre); border-color:var(--ochre);}
+  .t-date{
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    color:var(--stone);
+    display:block;
+    margin-bottom:4px;
+  }
+  .t-item h4{
+    font-family:var(--font-display);
+    font-size:1.1rem;
+    margin:0 0 4px;
+    color:var(--moss-dark);
+  }
+  .t-item p{margin:0; font-size:0.92rem; color:#414f49;}
+
+  .cv-download{
+    margin-top:34px;
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:var(--font-mono);
+    font-size:0.85rem;
+    text-decoration:none;
+    color:var(--paper);
+    background:var(--moss-dark);
+    padding:12px 20px;
+    border-radius:3px;
+    transition:background 0.2s ease;
+  }
+  .cv-download:hover{background:var(--moss);}
+  .cv-download svg{width:15px; height:15px; fill:var(--paper);}
+
+  /* Contact */
+  .contact-grid{display:flex; flex-wrap:wrap; gap:40px; align-items:flex-start;}
+  .contact-email{
+    font-family:var(--font-mono);
+    font-size:1.1rem;
+    color:var(--moss-dark);
+    text-decoration:none;
+    border-bottom:1px solid var(--moss);
+  }
+
+  footer{
+    padding:30px 0;
+    text-align:center;
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    color:var(--stone);
+  }
+
+  [data-reveal]{opacity:0; transform:translateY(14px); transition:opacity 0.6s ease, transform 0.6s ease;}
+  [data-reveal].visible{opacity:1; transform:translateY(0);}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    [data-reveal]{opacity:1; transform:none; transition:none;}
+    .card:hover, .social-row a:hover{transform:none;}
+  }
+</style>
 </head>
 <body>
 
-  <h1>Hello 👋</h1>
-  <p>This is my site</p>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">L. Fouqueau</a>
+    <nav class="links">
+      <a href="#about">About</a>
+      <a href="#research">Research</a>
+      <a href="#projects">Projects</a>
+      <a href="#cv">CV</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
 
-  <form action="https://formspree.io/f/xqeneybw" method="POST">
-    <input type="text" name="name" placeholder="Your name" required>
-    <input type="email" name="email" placeholder="Your email" required>
-    <textarea name="message" placeholder="Your message"></textarea>
-    <button type="submit">Send</button>
-  </form>
+<section class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Population Genetics</p>
+      <h1 class="title">Louise Fouqueau</h1>
+      <p class="tagline">I study how populations adapt when they are spread across space — between the effects of clonal reproduction and the constraints of genetic architecture.</p>
+      <div class="position">
+        Postdoc · Nick Barton's group · ISTA, Austria
+      </div>
+      <div class="social-row">
+        <!-- Replace the # links below with your real profiles -->
+        <a href="#" title="LinkedIn" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.24 8.25h4.5V23H.24V8.25zM8.25 8.25h4.31v2.01h.06c.6-1.14 2.07-2.34 4.26-2.34 4.56 0 5.4 3 5.4 6.9V23h-4.5v-6.98c0-1.66-.03-3.8-2.32-3.8-2.32 0-2.68 1.81-2.68 3.68V23h-4.5V8.25z"/></svg>
+        </a>
+        <a href="#" title="ORCID" aria-label="ORCID">
+          <svg viewBox="0 0 24 24"><path d="M12 0a12 12 0 100 24 12 12 0 000-24zM7.37 5.5a1.5 1.5 0 11-.01 3 1.5 1.5 0 01.01-3zM6.2 9.4h2.35V18.6H6.2V9.4zm4.28 0h4.53c4.31 0 6.21 3.08 6.21 4.6 0 1.68-1.31 4.6-6.21 4.6h-4.53V9.4zm2.35 1.99v5.22h1.98c3.03 0 4.02-1.83 4.02-2.6 0-1.42-.96-2.62-4.02-2.62h-1.98z"/></svg>
+        </a>
+        <a href="#" title="Research group page" aria-label="Research group page">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm7.93 9h-3.05a15.6 15.6 0 00-1.19-5.14A8.03 8.03 0 0119.93 11zM12 4.06c.95 1.34 1.9 3.3 2.19 6.94H9.81c.29-3.64 1.24-5.6 2.19-6.94zM9.81 13h4.38c-.29 3.64-1.24 5.6-2.19 6.94-.95-1.34-1.9-3.3-2.19-6.94zM8.31 5.86A15.6 15.6 0 007.12 11H4.07a8.03 8.03 0 014.24-5.14zM4.07 13h3.05c.14 1.87.54 3.57 1.19 5.14A8.03 8.03 0 014.07 13zm11.62 5.14c.65-1.57 1.05-3.27 1.19-5.14h3.05a8.03 8.03 0 01-4.24 5.14z"/></svg>
+        </a>
+        <a href="#" title="GitHub" aria-label="GitHub">
+          <svg viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.09 3.29 9.4 7.86 10.93.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.05 11.05 0 015.8 0c2.2-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.09 0 4.41-2.7 5.38-5.27 5.67.41.36.78 1.08.78 2.17v3.22c0 .31.21.67.8.56A10.51 10.51 0 0023.5 12C23.5 5.73 18.27.5 12 .5z"/></svg>
+        </a>
+        <a href="mailto:your.email@ista.ac.at" title="Email" aria-label="Email">
+          <svg viewBox="0 0 24 24"><path d="M2 4h20v16H2V4zm2 2v.01L12 12l8-5.99V6H4zm16 2.24l-7.42 5.56a1 1 0 01-1.16 0L4 8.24V18h16V8.24z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="lattice-holder">
+      <svg id="lattice" viewBox="0 0 300 300"></svg>
+      <p class="lattice-caption">a stepping-stone model — hover the nodes</p>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap bio" data-reveal>
+    <span class="section-num">01</span>
+    <h2 class="h2">About</h2>
+    <p>After completing a PhD at the <strong>Biological Station of Roscoff</strong>, I am currently a postdoc in <strong>Nick Barton's</strong> group at <strong>ISTA</strong> (Institute of Science and Technology Austria).</p>
+    <p>My recent work focuses on adaptation in spatially structured populations — modelled using either <em>stepping-stone</em> or <em>island</em> schemes — looking in particular at two angles: the effect of reproductive systems (mainly clonality), and the effect of genetic architecture on adaptive trajectories.</p>
+    <div class="tags">
+      <span class="tag">Local adaptation</span>
+      <span class="tag">Stepping-stone models</span>
+      <span class="tag">Island models</span>
+      <span class="tag">Clonality</span>
+      <span class="tag">Genetic architecture</span>
+      <span class="tag">Population genetics</span>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="research">
+  <div class="wrap" data-reveal>
+    <span class="section-num">02</span>
+    <h2 class="h2">Research</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Reproductive systems &amp; adaptation</h3>
+        <p>How clonality changes the way a structured population adapts to a heterogeneous environment.</p>
+      </div>
+      <div class="card">
+        <h3>Genetic architecture</h3>
+        <p>The role of the number, effect size, and distribution of loci involved in adaptation of spatially structured populations.</p>
+      </div>
+      <div class="card">
+        <h3>Spatial models</h3>
+        <p>Comparing adaptation dynamics between stepping-stone models and island models.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap" data-reveal>
+    <span class="section-num">03</span>
+    <h2 class="h2">Projects</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Project name 1</h3>
+        <p>One sentence describing the project, tool, or topic you're interested in (work or personal).</p>
+        <a class="card-link" href="#">View project →</a>
+        <div class="placeholder-note">replace me</div>
+      </div>
+      <div class="card">
+        <h3>Project name 2</h3>
+        <p>One sentence describing the project, tool, or topic you're interested in (work or personal).</p>
+        <a class="card-link" href="#">View project →</a>
+        <div class="placeholder-note">replace me</div>
+      </div>
+      <div class="card">
+        <h3>Project name 3</h3>
+        <p>One sentence describing the project, tool, or topic you're interested in (work or personal).</p>
+        <a class="card-link" href="#">View project →</a>
+        <div class="placeholder-note">replace me</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="cv">
+  <div class="wrap" data-reveal>
+    <span class="section-num">04</span>
+    <h2 class="h2">Background</h2>
+    <div class="timeline">
+      <div class="t-item current">
+        <span class="t-date">Current</span>
+        <h4>Postdoc — ISTA, Austria</h4>
+        <p>Nick Barton's group. Adaptation in structured populations.</p>
+      </div>
+      <div class="t-item">
+        <span class="t-date">PhD</span>
+        <h4>Biological Station of Roscoff, France</h4>
+        <p>PhD thesis — topic and dates to be added.</p>
+      </div>
+    </div>
+    <a class="cv-download" href="cv-louise-fouqueau.pdf" download>
+      <svg viewBox="0 0 24 24"><path d="M12 3v10.59l3.3-3.3 1.4 1.42L12 17.4l-4.7-4.7 1.4-1.42 3.3 3.3V3h2zM5 19h14v2H5v-2z"/></svg>
+      Download CV (PDF)
+    </a>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap" data-reveal>
+    <span class="section-num">05</span>
+    <h2 class="h2">Contact</h2>
+    <div class="contact-grid">
+      <div>
+        <p>The easiest way to reach me:</p>
+        <a class="contact-email" href="mailto:your.email@ista.ac.at">your.email@ista.ac.at</a>
+      </div>
+      <div>
+        <p>Or find me here:</p>
+        <div class="social-row">
+          <a href="#" title="LinkedIn" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.24 8.25h4.5V23H.24V8.25zM8.25 8.25h4.31v2.01h.06c.6-1.14 2.07-2.34 4.26-2.34 4.56 0 5.4 3 5.4 6.9V23h-4.5v-6.98c0-1.66-.03-3.8-2.32-3.8-2.32 0-2.68 1.81-2.68 3.68V23h-4.5V8.25z"/></svg></a>
+          <a href="#" title="ORCID" aria-label="ORCID"><svg viewBox="0 0 24 24"><path d="M12 0a12 12 0 100 24 12 12 0 000-24zM7.37 5.5a1.5 1.5 0 11-.01 3 1.5 1.5 0 01.01-3zM6.2 9.4h2.35V18.6H6.2V9.4zm4.28 0h4.53c4.31 0 6.21 3.08 6.21 4.6 0 1.68-1.31 4.6-6.21 4.6h-4.53V9.4zm2.35 1.99v5.22h1.98c3.03 0 4.02-1.83 4.02-2.6 0-1.42-.96-2.62-4.02-2.62h-1.98z"/></svg></a>
+          <a href="#" title="Research group page" aria-label="Research group page"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm7.93 9h-3.05a15.6 15.6 0 00-1.19-5.14A8.03 8.03 0 0119.93 11zM12 4.06c.95 1.34 1.9 3.3 2.19 6.94H9.81c.29-3.64 1.24-5.6 2.19-6.94zM9.81 13h4.38c-.29 3.64-1.24 5.6-2.19 6.94-.95-1.34-1.9-3.3-2.19-6.94zM8.31 5.86A15.6 15.6 0 007.12 11H4.07a8.03 8.03 0 014.24-5.14zM4.07 13h3.05c.14 1.87.54 3.57 1.19 5.14A8.03 8.03 0 014.07 13zm11.62 5.14c.65-1.57 1.05-3.27 1.19-5.14h3.05a8.03 8.03 0 01-4.24 5.14z"/></svg></a>
+          <a href="#" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.09 3.29 9.4 7.86 10.93.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.05 11.05 0 015.8 0c2.2-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.09 0 4.41-2.7 5.38-5.27 5.67.41.36.78 1.08.78 2.17v3.22c0 .31.21.67.8.56A10.51 10.51 0 0023.5 12C23.5 5.73 18.27.5 12 .5z"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">Louise Fouqueau — hosted on GitHub Pages</div>
+</footer>
+
+<script>
+(function(){
+  // ---- Lattice signature graphic: stepping-stone / island model ----
+  var svg = document.getElementById('lattice');
+  var ns = 'http://www.w3.org/2000/svg';
+  var size = 300, cols = 5, rows = 5, pad = 34;
+  var stepX = (size - pad*2) / (cols-1);
+  var stepY = (size - pad*2) / (rows-1);
+  var nodes = [];
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  for(var r=0; r<rows; r++){
+    for(var c=0; c<cols; c++){
+      var jitterX = reduceMotion ? 0 : (Math.sin(r*3+c)*3);
+      var jitterY = reduceMotion ? 0 : (Math.cos(c*3+r)*3);
+      nodes.push({
+        x: pad + c*stepX + jitterX,
+        y: pad + r*stepY + jitterY,
+        r: r, c: c,
+        id: r*cols+c
+      });
+    }
+  }
+
+  function neighbor(a,b){
+    return (Math.abs(a.r-b.r)===1 && a.c===b.c) || (Math.abs(a.c-b.c)===1 && a.r===b.r);
+  }
+
+  var linesEls = [];
+  nodes.forEach(function(a, i){
+    nodes.slice(i+1).forEach(function(b){
+      if(neighbor(a,b)){
+        var line = document.createElementNS(ns,'line');
+        line.setAttribute('x1', a.x); line.setAttribute('y1', a.y);
+        line.setAttribute('x2', b.x); line.setAttribute('y2', b.y);
+        line.setAttribute('stroke', '#b8bfa9');
+        line.setAttribute('stroke-width', '1');
+        line.dataset.a = a.id; line.dataset.b = b.id;
+        svg.appendChild(line);
+        linesEls.push(line);
+      }
+    });
+  });
+
+  // two "island" nodes highlighted in ochre
+  var islandIds = [6, 18];
+
+  nodes.forEach(function(n){
+    var circle = document.createElementNS(ns,'circle');
+    circle.setAttribute('cx', n.x); circle.setAttribute('cy', n.y);
+    var isIsland = islandIds.indexOf(n.id) !== -1;
+    circle.setAttribute('r', isIsland ? 7 : 5);
+    circle.setAttribute('fill', isIsland ? '#b9852f' : '#eeece2');
+    circle.setAttribute('stroke', isIsland ? '#b9852f' : '#3f6357');
+    circle.setAttribute('stroke-width', '1.5');
+    circle.style.cursor = 'pointer';
+    circle.dataset.id = n.id;
+
+    circle.addEventListener('mouseenter', function(){
+      linesEls.forEach(function(l){
+        if(l.dataset.a == n.id || l.dataset.b == n.id){
+          l.setAttribute('stroke', '#b9852f');
+          l.setAttribute('stroke-width', '2');
+        }
+      });
+      circle.setAttribute('r', isIsland ? 9 : 7);
+    });
+    circle.addEventListener('mouseleave', function(){
+      linesEls.forEach(function(l){
+        l.setAttribute('stroke', '#b8bfa9');
+        l.setAttribute('stroke-width', '1');
+      });
+      circle.setAttribute('r', isIsland ? 7 : 5);
+    });
+
+    svg.appendChild(circle);
+  });
+
+  // ---- scroll reveal ----
+  var reveals = document.querySelectorAll('[data-reveal]');
+  if('IntersectionObserver' in window && !reduceMotion){
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); }
+      });
+    }, {threshold:0.15});
+    reveals.forEach(function(el){ obs.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add('visible'); });
+  }
+})();
+</script>
 
 </body>
 </html>
