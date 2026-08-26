@@ -229,19 +229,26 @@
 
   /* CV timeline */
   .timeline{position:relative; margin-top:10px; padding-left:26px;}
-  .timeline::before{
-    content:"";
-    position:absolute; left:5px; top:6px; bottom:6px;
-    width:1px; background:var(--line);
-  }
   .t-item{position:relative; margin-bottom:34px;}
   .t-item::before{
     content:"";
     position:absolute; left:-26px; top:4px;
     width:11px; height:11px; border-radius:50%;
     background:var(--paper); border:2px solid var(--moss);
+    z-index:1;
   }
+  .t-item::after{
+    content:"";
+    position:absolute; left:-20.5px; top:9.5px;
+    width:0; height:calc(100% + 34px);
+    border-left:1.5px solid var(--line);
+    z-index:0;
+  }
+  .t-item:last-child::after{display:none;}
   .t-item.current::before{background:var(--ochre); border-color:var(--ochre);}
+  .t-item.future::before{background:var(--paper); border:2px dashed var(--ochre);}
+  .t-item.future::after{border-left-style:dashed; border-left-color:var(--ochre);}
+  .t-item.future .t-date{color:var(--ochre);}
   .t-date{
     font-family:var(--font-mono);
     font-size:0.75rem;
@@ -256,7 +263,6 @@
     color:var(--moss-dark);
   }
   .t-item p{margin:0; font-size:0.92rem; color:#414f49;}
-
   .cv-download{
     margin-top:34px;
     display:inline-flex; align-items:center; gap:10px;
